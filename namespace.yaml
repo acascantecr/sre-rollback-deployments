@@ -1,0 +1,9 @@
+# Namespace of the rollback lab. Isolated from the namespace "proyecto" (final
+# project): every manifest of this repo sets "namespace: rollback-lab" explicitly,
+# so nothing lands elsewhere even if "-n" is forgotten.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rollback-lab
+  labels:
+    purpose: sre-academy-exercise-18

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sre-rollback-service
+  namespace: rollback-lab
+  labels:
+    app: sre-rollback-app
+spec:
+  type: NodePort        # random node port (30000-32767); the lab uses port-forward 8081
+  selector:
+    app: sre-rollback-app
+  ports:
+    - port: 80
+      targetPort: 80

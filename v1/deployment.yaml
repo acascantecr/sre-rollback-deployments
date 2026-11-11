@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sre-rollback-app
+  namespace: rollback-lab
+  labels:
+    app: sre-rollback-app
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sre-rollback-app
+  template:
+    metadata:
+      labels:
+        app: sre-rollback-app
+        version: v1
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.21-alpine  # stable, reliable image
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # Custom page to tell the versions apart
+          volumeMounts:
+            - name: html-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: html-content
+          configMap:
+            name: v1-content

@@ -1,0 +1,28 @@
+# Argo CD Application of the rollback lab (exercise 18, Phase 5).
+# Differences with the exercise text:
+#   - project "rollback-lab" (not "default"): restricted to namespace rollback-lab
+#   - public repository on github.com: Argo CD reads it anonymously, no
+#     credentials stored in the cluster
+#   - no CreateNamespace: the namespace is created once from namespace.yaml
+#
+# NOTE: "argocd app rollback" (and the UI "History and Rollback") is refused
+# while automated sync is enabled. Before rollback methods 2 and 3, run:
+#   argocd app set sre-rollback-app --sync-policy none
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sre-rollback-app
+  namespace: argocd
+spec:
+  project: rollback-lab
+  source:
+    repoURL: https://github.com/acascantecr/sre-rollback-deployments.git
+    targetRevision: main
+    path: v1            # start with the stable version
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rollback-lab
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

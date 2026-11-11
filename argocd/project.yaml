@@ -1,0 +1,26 @@
+# AppProject = the safety fence of the lab. Applications of this project can
+# ONLY: read this one repository, deploy into the namespace "rollback-lab", and
+# create Deployments, Services and ConfigMaps. No cluster-scoped resources.
+# Even if an Application is misconfigured (e.g. destination "proyecto"), Argo CD
+# refuses to sync it, so prune/selfHeal can never touch the final project.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: rollback-lab
+  namespace: argocd
+spec:
+  description: SRE Academy exercise 18 - rollbacks (isolated from namespace proyecto)
+  sourceRepos:
+    - https://github.com/acascantecr/sre-rollback-deployments.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: rollback-lab
+  # Empty list = no cluster-scoped resources (Namespaces, ClusterRoles, CRDs...).
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: apps
+      kind: Deployment
